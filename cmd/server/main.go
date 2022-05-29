@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/aghabay/goapi/internal/database"
 	transportHTTP "github.com/aghabay/goapi/internal/transport/http"
 )
 
@@ -14,6 +15,13 @@ type App struct{}
 // Run - sets up our application
 func (app *App) Run() error {
 	fmt.Println("Setting Up Our APP")
+
+	var err error
+	_, err = database.NewDatabase()
+	if err != nil {
+		return err
+	}
+	
 
 	handler := transportHTTP.NewHandler()
 	handler.SetupRoutes()
