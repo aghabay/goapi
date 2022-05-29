@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/aghabay/goapi/internal/comment"
 	"github.com/aghabay/goapi/internal/database"
 	transportHTTP "github.com/aghabay/goapi/internal/transport/http"
 )
@@ -17,13 +18,14 @@ func (app *App) Run() error {
 	fmt.Println("Setting Up Our APP")
 
 	var err error
-	_, err = database.NewDatabase()
+	db, err := database.NewDatabase()
 	if err != nil {
 		return err
 	}
 	
+	commentService := comment.NewService(db)
 
-	handler := transportHTTP.NewHandler()
+	handler := transportHTTP.NewHandler(commentService)
 	handler.SetupRoutes()
 
 	if err := http.ListenAndServe(":8080", handler.Router); err != nil {
