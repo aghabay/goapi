@@ -23,6 +23,7 @@ type Comment struct {
 // CommentService -
 type CommentService interface {
 	GetComment(ID uint) (Comment, error)
+	GetCommentBySlug(slug string) ([]Comment, error)
 	PostComment(comment Comment) (Comment, error)
 	UpdateComment(ID uint, newComment Comment) (Comment, error)
 	DeleteComment(ID uint) error
@@ -43,6 +44,15 @@ func (s *Service) GetComment(ID uint) (Comment, error) {
 		return Comment{}, result.Error
 	}
 	return comment, nil
+}
+
+// GetCommentBySlug - retrieves all comments by slug (path - /article/name)
+func (s *Service) GetCommentBySlug(slug string) ([]Comment, error) {
+	var comments []Comment
+	if result := s.DB.Find(&comments).Where("slug = ?", slug); result.Error != nil {
+		return []Comment{}, result.Error
+	}
+	return comments, nil
 }
 
 // PostComment - adds a new comment to the database
@@ -73,4 +83,13 @@ func (s *Service) DeleteComment(ID uint) error {
 		return result.Error
 	}
 	return nil
+}
+
+// GetAllComments - retrieves all comments from the database
+func (s *Service) GetAllComments() ([]Comment, error) {
+	var comments []Comment
+	if result := s.DB.Find(&comments); result.Error != nil {
+		return comments, result.Error
+	}
+	return comments, nil
 }
